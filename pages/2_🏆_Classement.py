@@ -26,15 +26,15 @@ def calculate_school_scores(df):
     scores['suffisance_places'] = (df['2.16.b. Nombre de tables bancs à 2 places'] * 2 + df['2.16.a. Nombre de tables bancs à 1 place'] >= df['1.9. Effectif total des élèves']).astype(int)
     
     scores['infra_mobilier'] = (
-        (df['2.1. Clôture de l\'établissement'] == 'établissement clôturé').astype(int) +
-        scores['suffisance_salles'] +
+        (df['2.1. Clôture de l\'établissement'] == 'établissement entièrement clôturé').astype(int) +
+        scores['suffisance_salles'] *2 +
         (df['2.14. Disponibilité de salles de classes aérées et bien éclairées'] == 'Oui').astype(int) +
         (df['2.5. Etat de la toiture des salles de classe'] == 'Bon').astype(int) +
         (df['2.6. Disponibilité d\'une cour de récréation '] == 'Oui').astype(int) +
         (df['2.8. Disponibilité d\'un réfectoire scolaire'] == 'Oui').astype(int) +
         (df['2.9. Disponibilité d\'aire d\'EPS'] == 'Oui').astype(int) +
-        scores['suffisance_places']
-    ) / 8
+        scores['suffisance_places'] *2 
+    ) / 10
 
     # 3. Salubrité
     scores['salubrite'] = (
@@ -50,9 +50,14 @@ def calculate_school_scores(df):
     def check_admin_composition(row):
         required_roles = ['Directeur/Drectrice', 'Censeur(e)', 'Surveillant(e)']
         admin_roles = str(row['4.1. Personnel administratif']).split()
-        return all(role in admin_roles for role in required_roles)
+        
+        # Compter combien de rôles requis sont présents
+        points = sum(1 for role in required_roles if role in admin_roles)
+        
+        # Calculer le score final (nombre de points divisé par 3)
+        return points / 3
 
-    scores['admin_complete'] = df.apply(check_admin_composition, axis=1).astype(int)
+    scores['admin_complete'] = df.apply(check_admin_composition, axis=1)
     
     scores['prop_permanents'] = np.where(
         df['4.3. Nombre total d\'enseignants (chargé de cours)'] > 0,
@@ -114,23 +119,30 @@ st.title(":blue[Classement des Collèges]")
 top_13 = df_with_scores.nlargest(13,'score_total')[['Nom de l\'établissement', 'score_total', 'infra_base', 'infra_mobilier', 'salubrite', 'personnel', 'normes_peda']].reset_index(drop=True)
 bottom_13 = df_with_scores.nsmallest(13, 'score_total')[['Nom de l\'établissement', 'score_total', 'infra_base', 'infra_mobilier', 'salubrite', 'personnel', 'normes_peda']].reset_index(drop=True)
 
-col1, col2 = st.columns(2)
-with col1:
-    st.header(":blue[10 meilleurs]")
-    fig_top = px.bar(top_13, x='Nom de l\'établissement', y='score_total', text='score_total',
-                     title="Meilleurs établissements")
-    fig_top.update_xaxes(title=None)
-    fig_top.update_traces(texttemplate='%{text:.3f}', textposition='inside')
-    st.plotly_chart(fig_top)
-    st.dataframe(top_13.round(3))
-
-with col2:
-    st.header(":blue[10 derniers]")
-    fig_bottom = px.bar(bottom_13, x='Nom de l\'établissement', y='score_total',text='score_total',
-                       title="Établissements à faible respect des normes",)
-    fig_bottom.update_xaxes(title=None)
-    fig_bottom.update_traces(texttemplate='%{text:.3f}', textposition='inside')
-    st.plotly_chart(fig_bottom)
-    st.dataframe(bottom_13.round(3))
+# Trier par score_total de manière décroissante et réinitialiser l'index
+bottom_13 = bottom_13.sort_values('score_total', ascending=False).reset_index(drop=True)
 
 
+st.header(":blue[Classement des établissements]")
+fig_top = px.bar(top_13, x='Nom de l\'établissement', y='score_total', text='score_total',
+                    title="13 meilleurs établissements")
+fig_top.update_xaxes(title=None)
+fig_top.update_traces(texttemplate='%{text:.3f}', textposition='inside')
+st.plotly_chart(fig_top)
+#st.dataframe(top_13.round(3))
+
+
+st.header(":blue[Classement des établissements (suite)]")
+fig_bottom = px.bar(bottom_13, x='Nom de l\'établissement', y='score_total',text='score_total',
+                    title="13 établissements restant",)
+fig_bottom.update_xaxes(title=None)
+fig_bottom.update_traces(texttemplate='%{text:.3f}', textposition='inside')
+st.plotly_chart(fig_bottom)
+#st.dataframe(bottom_13.round(3))
+
+st.markdown("👇 Retour à la page d'accueil")
+st.page_link("Home.py", label="Accéder à la page d'accueil")
+st.write("")
+
+st.markdown("👇 Cliquez ci-dessous pour accéder aux points d'amélioration")
+st.page_link("pages/3_📝_Points_d'Amelioration.py", label="Accéder aux Points d'Amélioration")
