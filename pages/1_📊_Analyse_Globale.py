@@ -7,7 +7,7 @@ import numpy as np
 import warnings
 warnings.filterwarnings('ignore')
 
-st.set_page_config(layout="wide", page_title="Analyse des Normes Administratives - Collèges Privés Alibori")
+st.set_page_config(layout="wide", page_title="Vue d'ensemble du respect des normes - Collèges Privés Alibori")
 
 @st.cache_data
 def load_data():
@@ -15,7 +15,7 @@ def load_data():
 
 df = load_data()
 
-st.title(":blue[Analyse Globale des Normes Administratives]")
+st.title(":blue[Analyse Globale des Normes]")
 
 # 1. Analyse des infrastructures de base
 st.header(":blue[1. Infrastructures et mobiliers]")

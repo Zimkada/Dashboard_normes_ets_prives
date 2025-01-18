@@ -15,7 +15,7 @@ def load_data():
 df = load_data()
 
 
-st.title(":blue[Contrôle du respect des normes administratives dans les collèges privés de l'Alibori]")
+st.title(":blue[Contrôle du respect des normes dans les collèges privés de l'Alibori]")
 
 st.write(":blue[Application web développée par : GOUNOU N'GOBI Chabi Zimé, Planificateur de l'éducation, Data Analyst/Data Manager]")
 st.write("")
@@ -92,5 +92,5 @@ L'évaluation des établissements est basée sur cinq critères principaux :
    - Enseignants, administration
 
 5. **Quelques dispositions pédagogiques (15%)**
-   - Guide, programmes et quotas horaires
+   - Guides, programmes et quotas horaires
 """)

@@ -115,7 +115,7 @@ def calculate_school_scores(df):
 scores = calculate_school_scores(df)
 df_with_scores = pd.concat([df, scores], axis=1)
 
-st.title(":blue[Points d'Amélioration par Collège]")
+st.title(":blue[Points d'amélioration par Collège]")
 
 selected_school = st.selectbox('Sélectionner un établissement:', df['1.4. Nom de l\'établissement'].unique())
 school_data = df_with_scores[df_with_scores['1.4. Nom de l\'établissement'] == selected_school].iloc[0]
@@ -137,7 +137,7 @@ with col2:
     st.subheader("Score total")
     st.metric("Score", f"{school_data['score_total']:.2f}")
 
-st.subheader(":blue[Points à améliorer]")
+st.subheader(":blue[Recommandations (points à améliorer) :]")
 
 
 improvements = []
